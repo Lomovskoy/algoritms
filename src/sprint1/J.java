@@ -33,7 +33,7 @@ public class J {
 
     public static double sqrt(int number) {
         double t;
-        double squareRoot = number / 2;
+        double squareRoot = number / 2D;
         do {
             t = squareRoot;
             squareRoot = (t + (number / t)) / 2;

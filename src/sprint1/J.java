@@ -11,7 +11,7 @@ public class J {
     public static void main(String[] args) throws IOException {
         var reader = getReader();
         var value = Integer.parseInt(reader.readLine());
-        var sqrt = Math.sqrt(value);
+        var sqrt = sqrt(value);
         var buffer = new StringBuffer();
         factorize(value, sqrt, buffer);
         System.out.println(buffer);
@@ -29,6 +29,16 @@ public class J {
             }
         }
         if (value != 1) buffer.append(value);
+    }
+
+    public static double sqrt(int number) {
+        double t;
+        double squareRoot = number / 2;
+        do {
+            t = squareRoot;
+            squareRoot = (t + (number / t)) / 2;
+        } while ((t - squareRoot) != 0);
+        return squareRoot;
     }
 
     private static BufferedReader getReader() {

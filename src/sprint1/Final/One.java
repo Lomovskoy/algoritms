@@ -78,13 +78,13 @@ public class One {
         int zeroDistanceIndex = 1;
         for (int i = right; i < length; i++) {
             if (resultArray[i] == ZERO_INDEX) {
-                break;
+                return;
             } else if (resultArray[i] == -1) {
                 resultArray[i] = zeroDistanceIndex++;
             } else if (resultArray[i] > zeroDistanceIndex) {
                 resultArray[i] = zeroDistanceIndex++;
             } else {
-                break;
+                return;
             }
         }
     }

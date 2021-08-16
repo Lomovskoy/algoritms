@@ -30,17 +30,16 @@ public class One {
 
     private static String getResultString(int length, List<Integer> sequence) {
         if (length > 1) {
-            buildsequence(sequence, length);
+            buildSequence(sequence, length);
             return getFinalString(length, sequence);
         } else {
             return String.valueOf(sequence.get(ZERO_INDEX));
         }
     }
 
-    private static void buildsequence(List<Integer> sequence, int length) {
-        var indicesZero = new ArrayList<Integer>();
-        preBuildArray(length, sequence, indicesZero);
-        building(length, indicesZero, sequence);
+    private static void buildSequence(List<Integer> sequence, int length) {
+        firstPass(length, sequence);
+        secondPass(length, sequence);
     }
 
     private static String getFinalString(int length, List<Integer> sequence) {
@@ -49,54 +48,31 @@ public class One {
         return sb.toString();
     }
 
-    private static void preBuildArray(int length, List<Integer> sequence, List<Integer> indicesZero) {
+    private static void firstPass(int length, List<Integer> sequence) {
+        boolean flag = false;
+        int index = 1;
         for (int i = 0; i < length; i++) {
-            if (sequence.get(i) != ZERO_INDEX) {
-                sequence.set(i, null);
-            } else {
-                indicesZero.add(i);
+            if (sequence.get(i) == ZERO_INDEX) {
+                flag = true;
+                index = 1;
+            } else if (flag && sequence.get(i) != ZERO_INDEX) {
+                sequence.set(i, index++);
+            } else if (!flag) {
+                sequence.set(i, Integer.MAX_VALUE);
             }
         }
     }
 
-    private static void building(int length, ArrayList<Integer> indicesZero, List<Integer> sequence) {
-        for (var index : indicesZero) {
-            int left = index - 1, right = index + 1;
-            if (left >= 0) {
-                leftIteratorPass(sequence, left);
-            }
-            if (right <= length - 1) {
-                rightIteratorPass(length, sequence, right);
-            }
-        }
-    }
-
-    private static void rightIteratorPass(int length, List<Integer> sequence, int right) {
-        int zeroDistanceIndex = 1;
-        for (int i = right; i < length; i++) {
-            if (sequence.get(i) == null) {
-                sequence.set(i, zeroDistanceIndex++);
-            } else if (sequence.get(i) == ZERO_INDEX) {
-                return;
-            } else if (sequence.get(i) > zeroDistanceIndex) {
-                sequence.set(i, zeroDistanceIndex++);
-            } else {
-                return;
-            }
-        }
-    }
-
-    private static void leftIteratorPass(List<Integer> sequence, int left) {
-        int zeroDistanceIndex= 1;
-        for (int i = left; i >= 0; i--) {
-            if (sequence.get(i) == null) {
-                sequence.set(i, zeroDistanceIndex++);
-            } else if (sequence.get(i) == ZERO_INDEX) {
-                return;
-            } else if (sequence.get(i) > zeroDistanceIndex) {
-                sequence.set(i, zeroDistanceIndex++);
-            } else {
-                return;
+    private static void secondPass(int length, List<Integer> sequence) {
+        boolean flag = false;
+        int index = 1;
+        for (int i = length - 1; i >= 0; i--) {
+            if (sequence.get(i) == ZERO_INDEX) {
+                flag = true;
+                index = 1;
+            } else if (flag && sequence.get(i) != ZERO_INDEX) {
+                if (sequence.get(i) > index)
+                    sequence.set(i, index++);
             }
         }
     }

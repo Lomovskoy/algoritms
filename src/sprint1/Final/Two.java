@@ -8,6 +8,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Sprint 1
+ * Задача 2
+ * Id посылки: 52344804
+ * Ученик: Ломовской Кирилл
+ */
 public class Two {
 
     public static void main(String[] args) throws IOException {

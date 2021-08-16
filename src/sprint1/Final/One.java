@@ -30,78 +30,74 @@ public class One {
 
     private static String getResultString(int length, List<Integer> sequence) {
         if (length > 1) {
-            var resultArray = getResultArray(sequence, length);
-            return getFinalString(length, resultArray);
+            buildsequence(sequence, length);
+            return getFinalString(length, sequence);
         } else {
             return String.valueOf(sequence.get(ZERO_INDEX));
         }
     }
 
-    private static int[] getResultArray(List<Integer> sequence, int length) {
+    private static void buildsequence(List<Integer> sequence, int length) {
         var indicesZero = new ArrayList<Integer>();
-        var resultArray = getPreBuildArray(length, sequence, indicesZero);
-        building(length, indicesZero, resultArray);
-        return resultArray;
+        preBuildArray(length, sequence, indicesZero);
+        building(length, indicesZero, sequence);
     }
 
-    private static String getFinalString(int length, int[] resultArray) {
+    private static String getFinalString(int length, List<Integer> sequence) {
         var sb = new StringBuilder();
-        for (int i = 0; i < length; i++) sb.append(resultArray[i]).append(" ");
+        for (int i = 0; i < length; i++) sb.append(sequence.get(i)).append(" ");
         return sb.toString();
     }
 
-    private static int[] getPreBuildArray(int length, List<Integer> sequence, List<Integer> indicesZero) {
-        var resultArray = new int[length];
+    private static void preBuildArray(int length, List<Integer> sequence, List<Integer> indicesZero) {
         for (int i = 0; i < length; i++) {
             if (sequence.get(i) != ZERO_INDEX) {
-                resultArray[i] = -1;
+                sequence.set(i, null);
             } else {
                 indicesZero.add(i);
             }
         }
-        return resultArray;
     }
 
-    private static void building(int length, ArrayList<Integer> indicesZero, int[] resultArray) {
+    private static void building(int length, ArrayList<Integer> indicesZero, List<Integer> sequence) {
         for (var index : indicesZero) {
             int left = index - 1, right = index + 1;
             if (left >= 0) {
-                leftIteratorPass(resultArray, left);
+                leftIteratorPass(sequence, left);
             }
             if (right <= length - 1) {
-                rightIteratorPass(length, resultArray, right);
+                rightIteratorPass(length, sequence, right);
             }
         }
     }
 
-    private static void rightIteratorPass(int length, int[] resultArray, int right) {
+    private static void rightIteratorPass(int length, List<Integer> sequence, int right) {
         int zeroDistanceIndex = 1;
         for (int i = right; i < length; i++) {
-            if (resultArray[i] == ZERO_INDEX) {
+            if (sequence.get(i) == null) {
+                sequence.set(i, zeroDistanceIndex++);
+            } else if (sequence.get(i) == ZERO_INDEX) {
                 return;
-            } else if (resultArray[i] == -1) {
-                resultArray[i] = zeroDistanceIndex++;
-            } else if (resultArray[i] > zeroDistanceIndex) {
-                resultArray[i] = zeroDistanceIndex++;
+            } else if (sequence.get(i) > zeroDistanceIndex) {
+                sequence.set(i, zeroDistanceIndex++);
             } else {
                 return;
             }
         }
     }
 
-    private static void leftIteratorPass(int[] resultArray, int left) {
+    private static void leftIteratorPass(List<Integer> sequence, int left) {
         int zeroDistanceIndex= 1;
         for (int i = left; i >= 0; i--) {
-            if (resultArray[i] == ZERO_INDEX) {
+            if (sequence.get(i) == null) {
+                sequence.set(i, zeroDistanceIndex++);
+            } else if (sequence.get(i) == ZERO_INDEX) {
                 return;
-            } else if (resultArray[i] == -1) {
-                resultArray[i] = zeroDistanceIndex++;
-            } else if (resultArray[i] > zeroDistanceIndex) {
-                resultArray[i] = zeroDistanceIndex++;
+            } else if (sequence.get(i) > zeroDistanceIndex) {
+                sequence.set(i, zeroDistanceIndex++);
             } else {
                 return;
             }
         }
     }
-
 }

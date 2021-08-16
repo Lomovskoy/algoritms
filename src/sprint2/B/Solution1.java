@@ -1,4 +1,4 @@
-package sprint2;
+package sprint2.B;
 
 class Node<V> {
     public V value;
@@ -11,7 +11,7 @@ class Node<V> {
 }
 
 
-public class Solution {
+class Solution {
     public static void solution(Node<String> head) {
         System.out.println(head.value);
         if (head.next != null)

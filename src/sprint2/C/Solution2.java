@@ -12,10 +12,17 @@ class Node<V> {
 
 public class Solution2 {
     public static Node<String> solution(Node<String> head, int idx) {
-        if (idx == 0) {
-            head.next = head.next.next;
-        } else {
-            solution(head, --idx);
+        if (idx == 0) return head.next;
+
+        var node = head;
+        while (idx >= 0) {
+            if (idx == 1) {
+                node.next = node.next.next;
+                return head;
+            } else {
+                node = node.next;
+            }
+            --idx;
         }
         return head;
     }
@@ -26,5 +33,6 @@ public class Solution2 {
         Node<String> node1 = new Node<>("node1", node2);
         Node<String> node0 = new Node<>("node0", node1);
         Node<String> newHead = solution(node0, 1);
+        System.out.println();
     }
 }

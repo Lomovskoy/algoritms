@@ -33,6 +33,5 @@ public class Solution2 {
         Node<String> node1 = new Node<>("node1", node2);
         Node<String> node0 = new Node<>("node0", node1);
         Node<String> newHead = solution(node0, 1);
-        System.out.println();
     }
 }

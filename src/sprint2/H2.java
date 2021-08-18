@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Не работает с ([)]
 public class H2 {
 
     private static final String OPEN_SQUARE_BRACKET = "[";

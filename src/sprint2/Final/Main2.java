@@ -126,14 +126,14 @@ class Deque2<V> {
  * Такой интерфейс называют «дек» (англ. deque — double ended queue, «очередь с двумя концами»).
  * Дек можно воспринимать как двустороннюю очередь.
  */
-class Deque1 {
+class Deque1_2 {
 
     int size;
     int head; //голова
     int tail; //хвост
     int[] data;
 
-    public Deque1(int size) {
+    public Deque1_2(int size) {
         data = new int[this.size = size];
     }
 

@@ -32,17 +32,17 @@ public class Main1 {
  *
  * @param <V> - тип данных для Дек
  */
-class Deque<V> {
+class Deque1<V> {
 
     private V value;
-    private Deque<V> next;
-    private Deque<V> head;
-    private Deque<V> tail;
+    private Deque1<V> next;
+    private Deque1<V> head;
+    private Deque1<V> tail;
     private int size = 0;
 
-    public Deque() {}
+    public Deque1() {}
 
-    public Deque(V value, Deque<V> next) {
+    public Deque1(V value, Deque1<V> next) {
         this.value = value;
         this.next = next;
     }
@@ -61,7 +61,7 @@ class Deque<V> {
             head = this;
             size++;
         } else {
-            tail.next = new Deque<>(val, null);
+            tail.next = new Deque1<>(val, null);
             tail = tail.next;
             size++;
         }
@@ -81,7 +81,7 @@ class Deque<V> {
             head = this;
             size++;
         } else {
-            tail.next = new Deque<>(val, null);
+            tail.next = new Deque1<>(val, null);
             tail = tail.next;
             size++;
         }

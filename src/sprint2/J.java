@@ -23,7 +23,7 @@ public class J {
                 switch (key) {
                     case SIZE: {
                         var result = queue.size();
-                        System.out.println(result);
+                        System.out.println(result == null ? "error" : result);
                         break;
                     }
                     case GET: {

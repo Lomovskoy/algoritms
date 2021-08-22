@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class Main6 {
+public class One {
 
     private static final String PUSH_FRONT = "push_front";
     private static final String PUSH_BACK = "push_back";
@@ -21,7 +21,7 @@ public class Main6 {
         var size = Integer.parseInt(reader.readLine());
 
         var list = getListMap(reader, numberOfCommand);
-        var deque = new Deque6<Integer>(size);
+        var deque = new Deque<Integer>(size);
 
         var stringBuilder = new StringBuilder();
 
@@ -88,13 +88,13 @@ public class Main6 {
  *
  * @param <V> - тип данных для Дек
  */
-class Deque6<V> {
+class Deque<V> {
     private final V[] elements;
     private int head;
     private int tail;
     private int size;
 
-    public Deque6(int size) {
+    public Deque(int size) {
         this.size = 0;
         elements = (V[]) new Object[size];
     }

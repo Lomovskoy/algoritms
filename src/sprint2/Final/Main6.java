@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class Main6 {
 
@@ -66,12 +67,13 @@ public class Main6 {
     private static ArrayList<Map.Entry<String, Integer>> getListMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
         var list = new ArrayList<Map.Entry<String, Integer>>();
         for (int i = 0; i < numberOfRepetitions; i++) {
-            var str = reader.readLine();
-            if (str.contains(POP_FRONT) || str.contains(POP_BACK)) {
-                list.add(Map.entry(str, 0));
-            } else if (str.contains(PUSH_FRONT) || str.contains(PUSH_BACK)) {
-                var arr = str.split(" ");
-                list.add(Map.entry(arr[0], Integer.parseInt(arr[1])));
+            var tokenizer = new StringTokenizer(reader.readLine());
+            var token = tokenizer.nextToken();
+            if (token.equals(POP_FRONT) || token.equals(POP_BACK)) {
+                list.add(Map.entry(token, 0));
+            } else if (token.equals(PUSH_FRONT) || token.equals(PUSH_BACK)) {
+                int value = Integer.parseInt(tokenizer.nextToken());
+                list.add(Map.entry(token, value));
             }
         }
         return list;

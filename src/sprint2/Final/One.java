@@ -1,11 +1,8 @@
 package sprint2.Final;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.lang.*;
+import java.io.*;
 
 public class One {
 
@@ -15,30 +12,31 @@ public class One {
     private static final String POP_BACK = "pop_back";
 
     public static void main(String[] args) throws IOException {
-        var reader = getReader();
+        BufferedReader reader = getReader();
 
-        var numberOfCommand = Integer.parseInt(reader.readLine());
-        var size = Integer.parseInt(reader.readLine());
+        int numberOfCommand = Integer.parseInt(reader.readLine());
+        int size = Integer.parseInt(reader.readLine());
 
-        var list = getListMap(reader, numberOfCommand);
-        var deque = new Deque<Integer>(size);
+        ArrayList<Map<String, Integer>> list = getListMap(reader, numberOfCommand);
+        Deque<Integer> deque = new Deque<>(size);
 
-        var stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
 
-        for (var map : list) {
-                switch (map.getKey()) {
+        for (Map<String, Integer> map : list) {
+            for (String key : map.keySet()) {
+                switch (key) {
                     case PUSH_FRONT: {
-                        var result = deque.pushFront(map.getValue());
+                        boolean result = deque.pushFront(map.get(key));
                         if (!result) stringBuilder.append("error\n");
                         break;
                     }
                     case PUSH_BACK: {
-                        var result = deque.pushBack(map.getValue());
+                        boolean result = deque.pushBack(map.get(key));
                         if (!result) stringBuilder.append("error\n");
                         break;
                     }
                     case POP_FRONT: {
-                        var result = deque.popFront();
+                        Integer result = deque.popFront();
                         if (result == null) {
                             stringBuilder.append("error\n");
                         } else {
@@ -47,13 +45,14 @@ public class One {
                         break;
                     }
                     case POP_BACK: {
-                        var result = deque.popBack();
+                        Integer result = deque.popBack();
                         if (result == null) {
                             stringBuilder.append("error\n");
                         } else {
                             stringBuilder.append(result).append("\n");
                         }
                         break;
+                    }
                 }
             }
         }
@@ -64,16 +63,20 @@ public class One {
         return new BufferedReader(new InputStreamReader(System.in));
     }
 
-    private static ArrayList<Map.Entry<String, Integer>> getListMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
-        var list = new ArrayList<Map.Entry<String, Integer>>();
+    private static ArrayList<Map<String, Integer>> getListMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
+        ArrayList<Map<String, Integer>> list = new ArrayList<>();
         for (int i = 0; i < numberOfRepetitions; i++) {
-            var tokenizer = new StringTokenizer(reader.readLine());
-            var token = tokenizer.nextToken();
+            StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+            String token = tokenizer.nextToken();
             if (token.equals(POP_FRONT) || token.equals(POP_BACK)) {
-                list.add(Map.entry(token, 0));
+                Map<String, Integer> map = new HashMap<>();
+                map.put(token, 0);
+                list.add(map);
             } else if (token.equals(PUSH_FRONT) || token.equals(PUSH_BACK)) {
                 int value = Integer.parseInt(tokenizer.nextToken());
-                list.add(Map.entry(token, value));
+                Map<String, Integer> map = new HashMap<>();
+                map.put(token, value);
+                list.add(map);
             }
         }
         return list;
@@ -137,7 +140,7 @@ class Deque<V> {
      */
     public V popFront() {
         if (size == 0) return null;
-        var element = elements[head];
+        V element = elements[head];
         elements[head] = null;
         head = inc(head, elements.length);
         size--;
@@ -153,7 +156,7 @@ class Deque<V> {
     public V popBack() {
         if (size == 0) return null;
         tail = dec(tail, elements.length);
-        var element = elements[tail];
+        V element = elements[tail];
         elements[tail] = null;
         size--;
         return element;

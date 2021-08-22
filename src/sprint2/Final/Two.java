@@ -1,23 +1,24 @@
 package sprint2.Final;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.*;
+import java.lang.*;
+import java.io.*;
 
 public class Two {
 
     public static void main(String[] args) throws IOException {
         var reader = getReader();
         var arr = reader.readLine().split(" ");
-        int result = 0;
-        var stack = new Stack<Integer>();
+        double result = 0;
+        var stack = new Stack<Double>();
+        boolean flag = true;
         for (var val : arr) {
             if (val.matches("[-+]?\\d+")) {
-                stack.push(Integer.parseInt(val));
+                stack.push(Double.parseDouble(val));
             } else {
-                int first;
-                int second;
+                flag = false;
+                double first;
+                double second;
                 switch (val) {
                     case "+":
                         first = stack.pop();
@@ -40,13 +41,17 @@ public class Two {
                     default:
                         first = stack.pop();
                         second = stack.pop();
-                        result = second / first;
+                        result = Math.floor(second / first);
                         stack.push(result);
                         break;
                 }
             }
         }
-        System.out.println(result);
+        if (flag) {
+            System.out.println(stack.pop().intValue());
+        } else {
+            System.out.println((int) result);
+        }
     }
 
     private static BufferedReader getReader() {

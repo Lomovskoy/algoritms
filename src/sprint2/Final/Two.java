@@ -6,7 +6,7 @@ import java.io.*;
 
 /*
 -- ПРИНЦИП РАБОТЫ --
-Я реализовал Обратный польский калькулятор на deque.
+Я реализовал Обратный польский калькулятор на Stack.
 
 Алгоритм работает на стеке:
 1. Получить очередную часть выражения
@@ -22,11 +22,11 @@ import java.io.*;
 применяем к ним это действие, а ответ кладем отдельно в стек.
 Если следовать этому алгоритму, то мы успешно обработаем все нужные варианты и получим корректный отчет.
 
-Deque -- это порядок LIFO.
+Stack -- это порядок LIFO.
 Стек инвертирует порядок элементов: первые становятся последними.
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
-Амортизированная сложность алгоритма составляет O(1).
+Амортизированная сложность алгоритма составляет O(n).
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
 Если стек содержит n элементов, то пространственная сложность будет O(n + 3) - так как есть
@@ -37,16 +37,16 @@ public class Two {
     public static void main(String[] args) throws IOException {
         var reader = getReader();
         var arr = reader.readLine().split(" ");
-        double result = 0;
-        var stack = new Stack<Double>();
+        Integer result = null;
+        var stack = new Stack<Integer>();
         boolean flag = true;
         for (var val : arr) {
             if (val.matches("[-+]?\\d+")) {
-                stack.push(Double.parseDouble(val));
+                stack.push(Integer.parseInt(val));
             } else {
                 flag = false;
-                double first;
-                double second;
+                int first;
+                int second;
                 switch (val) {
                     case "+":
                         first = stack.pop();
@@ -69,16 +69,16 @@ public class Two {
                     default:
                         first = stack.pop();
                         second = stack.pop();
-                        result = Math.floor(second / first);
+                        result = (int) Math.floor((double) second / (double) first);
                         stack.push(result);
                         break;
                 }
             }
         }
         if (flag) {
-            System.out.println(stack.pop().intValue());
+            System.out.println(stack.pop());
         } else {
-            System.out.println((int) result);
+            System.out.println(result);
         }
     }
 

@@ -19,8 +19,11 @@ import java.io.*;
 Из описания алгоритма следует, что чем раньше элемент добавился в deque,
 тем позже он будет из неё извлечён.
 
-Deque -- это порядок LIFO.
-Стек инвертирует порядок элементов: первые становятся последними.
+Deque -- это порядок LIFO - если класть и доставать элементы с одного конца,
+то есть, или в голову класть и доставать из головы, или в хвост класть и доставать от туда же.
+Или Порядок FIFO - если доставать элементы с противоположной стороны, то есть положил в голову,
+извлёк из хвоста и наоборот.
+То есть можно использовать и как стек и как очередь.
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
 Добавление в очередь стоит O(1), это константная сложность,
@@ -42,6 +45,9 @@ public class One {
     private static final String PUSH_BACK = "push_back";
     private static final String POP_FRONT = "pop_front";
     private static final String POP_BACK = "pop_back";
+    private static final String ERROR = "error";
+    private static final String LINE_BREAK = "\n";
+
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = getReader();
@@ -49,43 +55,35 @@ public class One {
         int numberOfCommand = Integer.parseInt(reader.readLine());
         int size = Integer.parseInt(reader.readLine());
 
-        ArrayList<Map<String, Integer>> list = getListMap(reader, numberOfCommand);
         Deque<Integer> deque = new Deque<>(size);
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (Map<String, Integer> map : list) {
-            for (String key : map.keySet()) {
-                switch (key) {
-                    case PUSH_FRONT: {
-                        boolean result = deque.pushFront(map.get(key));
-                        if (!result) stringBuilder.append("error\n");
-                        break;
-                    }
-                    case PUSH_BACK: {
-                        boolean result = deque.pushBack(map.get(key));
-                        if (!result) stringBuilder.append("error\n");
-                        break;
-                    }
-                    case POP_FRONT: {
-                        Integer result = deque.popFront();
-                        if (result == null) {
-                            stringBuilder.append("error\n");
-                        } else {
-                            stringBuilder.append(result).append("\n");
-                        }
-                        break;
-                    }
-                    case POP_BACK: {
-                        Integer result = deque.popBack();
-                        if (result == null) {
-                            stringBuilder.append("error\n");
-                        } else {
-                            stringBuilder.append(result).append("\n");
-                        }
-                        break;
-                    }
+        for (int i = 0; i < numberOfCommand; i++) {
+            StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+            String token = tokenizer.nextToken();
+            if (token.equals(POP_FRONT)) {
+                Integer result = deque.popFront();
+                if (result == null) {
+                    stringBuilder.append(ERROR).append(LINE_BREAK);
+                } else {
+                    stringBuilder.append(result).append(LINE_BREAK);
                 }
+            } else if (token.equals(POP_BACK)) {
+                Integer result = deque.popBack();
+                if (result == null) {
+                    stringBuilder.append(ERROR).append(LINE_BREAK);
+                } else {
+                    stringBuilder.append(result).append(LINE_BREAK);
+                }
+            } else if (token.equals(PUSH_FRONT)) {
+                int value = Integer.parseInt(tokenizer.nextToken());
+                boolean result = deque.pushFront(value);
+                if (!result) stringBuilder.append(ERROR).append(LINE_BREAK);
+            } else if (token.equals(PUSH_BACK)) {
+                int value = Integer.parseInt(tokenizer.nextToken());
+                boolean result = deque.pushBack(value);
+                if (!result) stringBuilder.append(ERROR).append(LINE_BREAK);
             }
         }
         System.out.println(stringBuilder);
@@ -93,25 +91,6 @@ public class One {
 
     private static BufferedReader getReader() {
         return new BufferedReader(new InputStreamReader(System.in));
-    }
-
-    private static ArrayList<Map<String, Integer>> getListMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
-        ArrayList<Map<String, Integer>> list = new ArrayList<>();
-        for (int i = 0; i < numberOfRepetitions; i++) {
-            StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
-            String token = tokenizer.nextToken();
-            if (token.equals(POP_FRONT) || token.equals(POP_BACK)) {
-                Map<String, Integer> map = new HashMap<>();
-                map.put(token, 0);
-                list.add(map);
-            } else if (token.equals(PUSH_FRONT) || token.equals(PUSH_BACK)) {
-                int value = Integer.parseInt(tokenizer.nextToken());
-                Map<String, Integer> map = new HashMap<>();
-                map.put(token, value);
-                list.add(map);
-            }
-        }
-        return list;
     }
 }
 
@@ -195,12 +174,10 @@ class Deque<V> {
     }
 
     static int dec(int i, int modulus) {
-        if (--i < 0) i = modulus - 1;
-        return i;
+        return (i - 1 + modulus) % modulus;
     }
 
     static int inc(int i, int modulus) {
-        if (++i >= modulus) i = 0;
-        return i;
+        return (i + 1 + modulus) % modulus;
     }
 }

@@ -62,28 +62,37 @@ public class One {
         for (int i = 0; i < numberOfCommand; i++) {
             StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
             String token = tokenizer.nextToken();
-            if (token.equals(POP_FRONT)) {
-                Integer result = deque.popFront();
-                if (result == null) {
-                    stringBuilder.append(ERROR).append(LINE_BREAK);
-                } else {
-                    stringBuilder.append(result).append(LINE_BREAK);
+            switch (token) {
+                case POP_FRONT: {
+                    Integer result = deque.popFront();
+                    if (result == null) {
+                        stringBuilder.append(ERROR).append(LINE_BREAK);
+                    } else {
+                        stringBuilder.append(result).append(LINE_BREAK);
+                    }
+                    break;
                 }
-            } else if (token.equals(POP_BACK)) {
-                Integer result = deque.popBack();
-                if (result == null) {
-                    stringBuilder.append(ERROR).append(LINE_BREAK);
-                } else {
-                    stringBuilder.append(result).append(LINE_BREAK);
+                case POP_BACK: {
+                    Integer result = deque.popBack();
+                    if (result == null) {
+                        stringBuilder.append(ERROR).append(LINE_BREAK);
+                    } else {
+                        stringBuilder.append(result).append(LINE_BREAK);
+                    }
+                    break;
                 }
-            } else if (token.equals(PUSH_FRONT)) {
-                int value = Integer.parseInt(tokenizer.nextToken());
-                boolean result = deque.pushFront(value);
-                if (!result) stringBuilder.append(ERROR).append(LINE_BREAK);
-            } else if (token.equals(PUSH_BACK)) {
-                int value = Integer.parseInt(tokenizer.nextToken());
-                boolean result = deque.pushBack(value);
-                if (!result) stringBuilder.append(ERROR).append(LINE_BREAK);
+                case PUSH_FRONT: {
+                    int value = Integer.parseInt(tokenizer.nextToken());
+                    boolean result = deque.pushFront(value);
+                    if (!result) stringBuilder.append(ERROR).append(LINE_BREAK);
+                    break;
+                }
+                case PUSH_BACK: {
+                    int value = Integer.parseInt(tokenizer.nextToken());
+                    boolean result = deque.pushBack(value);
+                    if (!result) stringBuilder.append(ERROR).append(LINE_BREAK);
+                    break;
+                }
             }
         }
         System.out.println(stringBuilder);

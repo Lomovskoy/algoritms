@@ -5,14 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 public class L {
 
+    private static int index = Integer.MAX_VALUE;
+
     public static void main(String[] args) throws IOException {
-        var reader = getReader();
+        BufferedReader reader = getReader();
         int size = Integer.parseInt(reader.readLine());
-        var arr = getStringArray(reader);
+        int[] arr = getStringArray(reader, size);
         int stopDay = Integer.parseInt(reader.readLine());
         int firstDay = binarySearch(arr, stopDay, 0, size - 1);
         int secondDay = binarySearch(arr, stopDay + stopDay, 0, size - 1);
@@ -21,13 +24,20 @@ public class L {
         System.out.println(firstDay + " " + secondDay);
     }
 
-    private static int binarySearch(List<Integer> arr, int sought, int left, int right) {
-        if (right <= left) return -1;
+    private static int binarySearch(int[] arr, int sought, int left, int right) {
+        if (right <= left && index == Integer.MAX_VALUE && arr[right] < sought) return -1;
 
         int mid = (left + right) / 2;
-        if (arr.get(mid) >= sought) {
-            return mid;
-        } else if (sought < arr.get(mid)) {
+        if (arr[mid] >= sought) {
+            if (index > mid) {
+                index = mid;
+                return binarySearch(arr, sought, left, mid);
+            } else {
+                int result = index;
+                index = Integer.MAX_VALUE;
+                return result;
+            }
+        } else if (sought < arr[mid]) {
             return binarySearch(arr, sought, left, mid);
         } else {
             return binarySearch(arr, sought, mid + 1, right);
@@ -38,8 +48,13 @@ public class L {
         return new BufferedReader(new InputStreamReader(System.in));
     }
 
-    private static List<Integer> getStringArray(BufferedReader reader) throws IOException {
-        return Arrays.stream(reader.readLine().split(" ")).map(Integer::parseInt).collect(Collectors.toList());
+    private static int[] getStringArray(BufferedReader reader, int size) throws IOException {
+        StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = Integer.parseInt(tokenizer.nextToken());
+        }
+        return arr;
     }
 
 }

@@ -45,34 +45,24 @@ public class Two {
                 stack.push(Integer.parseInt(val));
             } else {
                 flag = false;
-                int first;
-                int second;
+                int first = stack.pop();
+                int second = stack.pop();
                 switch (val) {
                     case "+":
-                        first = stack.pop();
-                        second = stack.pop();
                         result = second + first;
-                        stack.push(result);
                         break;
                     case "-":
-                        first = stack.pop();
-                        second = stack.pop();
                         result = second - first;
-                        stack.push(result);
                         break;
                     case "*":
-                        first = stack.pop();
-                        second = stack.pop();
                         result = second * first;
-                        stack.push(result);
                         break;
                     default:
-                        first = stack.pop();
-                        second = stack.pop();
-                        result = (int) Math.floor((double) second / (double) first);
-                        stack.push(result);
+                        result = second / first;
+                        if ((second < 0 || first < 0) && second % first != 0) --result;
                         break;
                 }
+                stack.push(result);
             }
         }
         if (flag) {

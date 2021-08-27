@@ -4,25 +4,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class С {
+public class C {
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = getReader();
-        String[] pattern = getStringArray(reader);
-        if (pattern.length == 1 && pattern[0].isEmpty()) {
+        String string = reader.readLine();
+        if (string.isEmpty()) {
             System.out.println("True");
             return;
         }
-        String[] string = getStringArray(reader);
-        System.out.println(contains(pattern, string));
+        char[] pattern = getStringArray(string);
+        string = reader.readLine();
+        char[] target = getStringArray(string);
+        System.out.println(contains(pattern, target));
     }
 
-    private static String contains(String[] pattern, String[] string){
+    private static String contains(char[] pattern, char[] string){
         int size = pattern.length;
         int swap = 0;
-        for (String s : pattern) {
+        for (char s : pattern) {
             for (int j = swap; j < string.length; j++) {
-                if (string[j].equals(s)) {
+                if (string[j] == s) {
                     --size;
                     if (size == 0) {
                         return "True";
@@ -40,8 +42,8 @@ public class С {
         return new BufferedReader(new InputStreamReader(System.in));
     }
 
-    private static String[] getStringArray(BufferedReader reader) throws IOException {
-        return reader.readLine().split("");
+    private static char[] getStringArray(String string) throws IOException {
+        return string.toCharArray();
     }
 
 }

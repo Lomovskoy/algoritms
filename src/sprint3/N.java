@@ -68,7 +68,6 @@ public class N {
             list.add(Integer.parseInt(tokenizer.nextToken()));
             set.add(list);
         }
-        ArrayList<List<Integer>> list = new ArrayList<>(set);
-        return list.stream().sorted(Comparator.comparing(o -> o.get(0))).collect(Collectors.toList());
+        return set.stream().sorted(Comparator.comparing(o -> o.get(0))).collect(Collectors.toList());
     }
 }

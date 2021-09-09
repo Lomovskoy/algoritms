@@ -36,7 +36,7 @@ package sprint3.Final;
 Амортизированная пространственная сложность алгоритма составляет O(n).
 
 */
-public class Solution {
+public class One {
 
     public static int brokenSearch(int[] array, int searchValue) {
         int firstIndex = 0;

@@ -4,9 +4,41 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/*
+-- ПРИНЦИП РАБОТЫ --
+Этот алгоритм состоит из 2х алгоритмов.
+
+1. Сначала, при получении данных мы создаем, лист объектов.
+Каждый объект содержит имя, очки и штраф.
+
+2. Быстрая сортировка этого листа, эта сортировка не создает отдельный лист
+по тому имеет пространственную сложность O(n).
+Сортировка принимает:
+    1. Лист объектов дял сортировки
+    2. Индекс начала сортировки
+    3. Индекс конца сортировки
+
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Следующая группа алгоритмов, делает следующее.
+1. Собирает входные данных в лист объектов.
+2. Сортирует этот лист, по полю очки, в обратном порядке.
+3. Досортировывает одинаковые элементы по полю штраф в прямом порядке
+4. Оставшиеся элементы сортирует по имени в лексикографическом порядке.
+Все эти условия сортировки описаны в переопределённом компараторе.
+
+Чем соответствует всем требованиям задачи.
+
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Амортизированная сложность алгоритма составляет лучшая O(n * log(n)), худшая O(n^2).
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Амортизированная пространственная сложность алгоритма составляет O(n).
+
+*/
 public class Two {
 
     public static void main(String[] args) throws IOException {
@@ -41,10 +73,7 @@ public class Two {
 
         }
 
-        Participant temp = array.get(end);
-        array.set(end, array.get(counter));
-        array.set(counter, temp);
-
+        Collections.swap(array, end, counter);
         return counter;
     }
 
@@ -101,15 +130,11 @@ public class Two {
 
         @Override
         public int compareTo(Participant o) {
-            if (this.getScore() > o.getScore()) {
-                return -1;
-            } else if (this.getScore() < o.getScore()) {
-                return 1;
+            if (this.getScore() != o.getScore()) {
+                return o.getScore() - this.getScore();
             } else {
-                if (this.getFines() > o.getFines()) {
-                    return 1;
-                } else if (this.getFines() < o.getFines()) {
-                    return -1;
+                if (this.getFines() != o.getFines()) {
+                    return this.getFines() - o.getFines();
                 } else {
                     return this.getName().compareTo(o.getName());
                 }

@@ -11,13 +11,10 @@ public class D {
     public static void main(String[] args) throws IOException {
         BufferedReader reader = getReader();
         int size = Integer.parseInt(reader.readLine());
-
         Set<String> strings = getNameScoresMap(reader, size);
-
         StringBuffer stringBuffer = new StringBuffer();
         strings.forEach(s -> stringBuffer.append(s).append("\n"));
         System.out.println(stringBuffer);
-
     }
 
     private static BufferedReader getReader() {

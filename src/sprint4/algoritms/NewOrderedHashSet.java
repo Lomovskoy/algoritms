@@ -1,20 +1,22 @@
-package sprint4;
+package sprint4.algoritms;
 
-public class OrderedHashSet {
+public class NewOrderedHashSet extends OrderedHashSet {
 
     private static final int INITIAL_SIZE = 16;
     private static final int BASKET_SIZE = 1;
     private static final int COEFFICIENT = 3;
+    private final static int q = (int) Math.pow(10, 9) + 7;
+    private final static int R = (int) Math.pow(2, 16);
     private String[][] data;
     private int[] number;
     private int index = 0;
 
-    public OrderedHashSet() {
+    public NewOrderedHashSet() {
         data = new String[INITIAL_SIZE][BASKET_SIZE];
         number = new int[INITIAL_SIZE];
     }
 
-    public OrderedHashSet(int size) {
+    public NewOrderedHashSet(int size) {
         if (size == 0) size = INITIAL_SIZE;
         data = new String[size][BASKET_SIZE];
         number = new int[size];
@@ -75,18 +77,18 @@ public class OrderedHashSet {
 
     private int getHash(String string) {
         char[] chars = string.toCharArray();
-        int hash = 0;
-        int j = 0;
-        if (chars.length > 1) {
-            for (; j < chars.length; j++) {
-                int x = j == 0 ? 1 : j;
-                hash += ((chars[j] + j) * j / x) - j;
-            }
-            hash = (hash / j) / chars.length;
-        } else {
-            hash = chars[0];
+        int[] ints = new int[chars.length];
+
+        for (int i = 0; i < chars.length; i++) {
+            ints[i] = chars[i];
         }
-        return hash;
+
+        int hash = 0;
+        for (int i = 0; i < ints.length; i++) {
+            int row = (ints.length - 1) - i;
+            hash += ints[i] * Math.pow(q, row);
+        }
+        return hash % R;
     }
 
     private void updateDataArray(int newSize) {

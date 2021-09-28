@@ -3,8 +3,10 @@ package sprint4.Final;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class Main {
 
@@ -87,10 +89,10 @@ public class Main {
                 return null;
             } else {
                 List<Pair> pairs = data.get(hash);
-                if (pairs.isEmpty()) {
+                if (pairs == null || pairs.isEmpty()) {
                     return null;
                 }
-                Optional<Pair> pair = pairs.stream().filter(Objects::nonNull).filter(p -> p.getKey().equals(key)).findAny();
+                Optional<Pair> pair = getOptionalPair(key, pairs);
                 if (pair.isEmpty()) {
                     return null;
                 } else {
@@ -117,10 +119,12 @@ public class Main {
                 data.add(hash, pairs);
             } else {
                 List<Pair> pairs = data.get(hash);
-                if (pairs == null) {
-                    data.get(hash).add(new Pair(key, value));
+                if (pairs == null || pairs.isEmpty()) {
+                    List<Pair> newPairs = new ArrayList<>();
+                    newPairs.add(pair);
+                    data.set(hash, newPairs);
                 } else {
-                    List<Pair> pairsKey = pairs.stream().filter(p -> p.getKey().equals(key)).collect(Collectors.toList());
+                    List<Pair> pairsKey = getPairList(key, pairs);
                     if (pairsKey.isEmpty()) {
                         data.get(hash).add(new Pair(key, value));
                     } else {
@@ -141,10 +145,10 @@ public class Main {
          */
         public Integer deleteKey(int key) {
             int hash = getHash(key);
-            if(data.get(hash).isEmpty()) {
+            if(hash >= data.size() || data.isEmpty() || data.get(hash) == null || data.get(hash).isEmpty()) {
                 return null;
             } else {
-                Optional<Pair> pairs = data.get(hash).stream().filter(Objects::nonNull).filter(d -> d.getKey().equals(key)).findFirst();
+                Optional<Pair> pairs = getOptionalPair(key, hash);
                 if (pairs.isEmpty()) {
                     return null;
                 } else {
@@ -165,14 +169,37 @@ public class Main {
         }
 
         private void updateDataArray(int newSize) {
-            for (int i = data.size(); i < newSize; i++) {
+            for (int i = data.size(); i <= newSize; i++) {
                 data.add(null);
             }
+        }
+
+        private Optional<Pair> getOptionalPair(int key, List<Pair> pairs) {
+            for (Pair pair : pairs) {
+                if (pair != null && pair.getKey().equals(key)) {
+                    return Optional.of(pair);
+                }
+            }
+            return Optional.empty();
+        }
+
+        private Optional<Pair> getOptionalPair(int key, int hash) {
+            return getOptionalPair(key, data.get(hash));
+        }
+
+        private List<Pair> getPairList(int key, List<Pair> pairs) {
+            List<Pair> pairList = new ArrayList<>();
+            for (Pair pair : pairs) {
+                if (pair != null && pair.getKey().equals(key)) {
+                    pairList.add(pair);
+                }
+            }
+            return pairList;
         }
     }
 
     public static class Pair {
-        private Integer key;
+        private final Integer key;
         private Integer value;
 
         public Pair(Integer key, Integer value) {
@@ -182,10 +209,6 @@ public class Main {
 
         public Integer getKey() {
             return key;
-        }
-
-        public void setKey(Integer key) {
-            this.key = key;
         }
 
         public Integer getValue() {
@@ -198,7 +221,13 @@ public class Main {
 
         @Override
         public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Pair)) return false;
+
             Pair pair = (Pair) o;
+            if (this.getKey() == null || pair.getKey() == null) {
+                return false;
+            }
             return this.getKey().equals(pair.getKey());
         }
     }

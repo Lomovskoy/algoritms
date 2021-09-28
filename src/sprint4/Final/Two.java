@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class Main {
+public class Two {
 
     private static final String DELETE = "delete";
     private static final String PUT = "put";
@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader reader = getReader();
         int numberOfCommand = Integer.parseInt(reader.readLine());
-        ArrayList<Map<String, List<Integer>>> listRequests = getMap(reader, numberOfCommand);
+        ArrayList<Map<String, List<String>>> listRequests = getMap(reader, numberOfCommand);
         MyHashMap myHashMap = new MyHashMap();
 
-        for (Map<String, List<Integer>> map : listRequests) {
+        for (Map<String, List<String>> map : listRequests) {
             for (String key : map.keySet()) {
                 switch (key) {
                     case GET: {
@@ -42,23 +42,23 @@ public class Main {
         }
     }
 
-    private static ArrayList<Map<String, List<Integer>>> getMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
-        ArrayList<Map<String, List<Integer>>> list = new ArrayList<Map<String, List<Integer>>>();
+    private static ArrayList<Map<String, List<String>>> getMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
+        ArrayList<Map<String, List<String>>> list = new ArrayList<Map<String, List<String>>>();
         for (int i = 0; i < numberOfRepetitions; i++) {
             var str = reader.readLine();
-            List<Integer> listNested  = new ArrayList<>();
+            List<String> listNested  = new ArrayList<>();
             if (str.contains(DELETE)) {
                 var arr = str.split(" ");
-                listNested.add(Integer.parseInt(arr[1]));
+                listNested.add(arr[1]);
                 list.add(Map.of(arr[0], listNested));
             } else if (str.contains(GET)) {
                 var arr = str.split(" ");
-                listNested.add(Integer.parseInt(arr[1]));
+                listNested.add(arr[1]);
                 list.add(Map.of(arr[0], listNested));
             } else if (str.contains(PUT)) {
                 var arr = str.split(" ");
-                listNested.add(Integer.parseInt(arr[1]));
-                listNested.add(Integer.parseInt(arr[2]));
+                listNested.add(arr[1]);
+                listNested.add(arr[2]);
                 list.add(Map.of(arr[0], listNested));
             }
         }
@@ -71,8 +71,8 @@ public class Main {
 
     public static class MyHashMap {
         private static final int INITIAL_SIZE = 16;
-        private static final int Q = 1000;
-        private static final int R = 103;
+        private static final int Q = 100;
+        private static final int R = 10;
         private final List<List<Pair>> data = new ArrayList<>(INITIAL_SIZE);
 
         /**
@@ -83,7 +83,7 @@ public class Main {
          * @param key ключ
          * @return значение
          */
-        public Integer getKey(int key) {
+        public String getKey(String key) {
             int hash = getHash(key);
             if (hash >= data.size()) {
                 return null;
@@ -109,7 +109,7 @@ public class Main {
          * @param key   ключ
          * @param value значение
          */
-        public void putKeyValue(int key, int value) {
+        public void putKeyValue(String key, String value) {
             int hash = getHash(key);
             Pair pair = new Pair(key, value);
             if (hash >= data.size()) {
@@ -128,8 +128,12 @@ public class Main {
                     if (pairsKey.isEmpty()) {
                         data.get(hash).add(new Pair(key, value));
                     } else {
-                        int index = pairsKey.indexOf(pair);
-                        data.get(hash).set(index, pair);
+                        int index = indexOf(pairs, pair);
+                        if (index < 0) {
+                            data.get(hash).set(data.get(hash).size() - 1, pair);
+                        } else {
+                            data.get(hash).set(index, pair);
+                        }
                     }
                 }
             }
@@ -143,7 +147,7 @@ public class Main {
          * @param key ключ
          * @return значение
          */
-        public Integer deleteKey(int key) {
+        public String deleteKey(String key) {
             int hash = getHash(key);
             if(hash >= data.size() || data.isEmpty() || data.get(hash) == null || data.get(hash).isEmpty()) {
                 return null;
@@ -152,20 +156,36 @@ public class Main {
                 if (pairs.isEmpty()) {
                     return null;
                 } else {
-                    int index = data.get(hash).indexOf(pairs.get());
+                    int index = indexOf(data.get(hash), pairs.get());
+                    if (index < 0) {
+                        return null;
+                    }
                     data.get(hash).set(index, null);
                     return pairs.get().getValue();
                 }
             }
         }
 
-        private static int getHash(int string) {
-            char[] chars = String.valueOf(string).toCharArray();
+        private static int getHash(String string) {
+            char[] chars = string.toCharArray();
             int hash = 0;
             for (int aChar : chars) {
                 hash = Math.abs((hash * Q + aChar) % R);
             }
             return hash;
+        }
+
+        private int indexOf(List<Pair> pairs, Pair pair) {
+            int index = 0;
+            for (Pair val : pairs) {
+                if (val != null && val.getKey() != null && pair != null && pair.getKey() != null) {
+                    if (val.getKey().equals(pair.getKey())) {
+                        return index;
+                    }
+                }
+                index++;
+            }
+            return -1;
         }
 
         private void updateDataArray(int newSize) {
@@ -174,7 +194,7 @@ public class Main {
             }
         }
 
-        private Optional<Pair> getOptionalPair(int key, List<Pair> pairs) {
+        private Optional<Pair> getOptionalPair(String key, List<Pair> pairs) {
             for (Pair pair : pairs) {
                 if (pair != null && pair.getKey().equals(key)) {
                     return Optional.of(pair);
@@ -183,11 +203,11 @@ public class Main {
             return Optional.empty();
         }
 
-        private Optional<Pair> getOptionalPair(int key, int hash) {
+        private Optional<Pair> getOptionalPair(String key, int hash) {
             return getOptionalPair(key, data.get(hash));
         }
 
-        private List<Pair> getPairList(int key, List<Pair> pairs) {
+        private List<Pair> getPairList(String key, List<Pair> pairs) {
             List<Pair> pairList = new ArrayList<>();
             for (Pair pair : pairs) {
                 if (pair != null && pair.getKey().equals(key)) {
@@ -199,36 +219,25 @@ public class Main {
     }
 
     public static class Pair {
-        private final Integer key;
-        private Integer value;
+        private final String key;
+        private String value;
 
-        public Pair(Integer key, Integer value) {
+        public Pair(String key, String value) {
             this.key = key;
             this.value = value;
         }
 
-        public Integer getKey() {
+        public String getKey() {
             return key;
         }
 
-        public Integer getValue() {
+        public String getValue() {
             return value;
         }
 
-        public void setValue(Integer value) {
+        public void setValue(String value) {
             this.value = value;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Pair)) return false;
-
-            Pair pair = (Pair) o;
-            if (this.getKey() == null || pair.getKey() == null) {
-                return false;
-            }
-            return this.getKey().equals(pair.getKey());
-        }
     }
 }

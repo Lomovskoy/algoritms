@@ -3,10 +3,7 @@ package sprint4.Final;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Two {
 
@@ -15,54 +12,30 @@ public class Two {
     private static final String GET = "get";
 
     public static void main(String[] args) throws IOException {
+        MyHashMap myHashMap = new MyHashMap();
+        StringBuilder stringBuilder = new StringBuilder();
         BufferedReader reader = getReader();
         int numberOfCommand = Integer.parseInt(reader.readLine());
-        ArrayList<Map<String, List<String>>> listRequests = getMap(reader, numberOfCommand);
-        MyHashMap myHashMap = new MyHashMap();
-
-        for (Map<String, List<String>> map : listRequests) {
-            for (String key : map.keySet()) {
-                switch (key) {
-                    case GET: {
-                        var result = myHashMap.getKey(map.get(key).get(0));
-                        System.out.println(result == null ? "None" : result);
-                        break;
-                    }
-                    case PUT: {
-                        myHashMap.putKeyValue(map.get(key).get(0), map.get(key).get(1));
-                        break;
-                    }
-                    case DELETE: {
-                        var result = myHashMap.deleteKey(map.get(key).get(0));
-                        System.out.println(result == null ? "None" : result);
-                        break;
-                    }
+        for (int i = 0; i < numberOfCommand; i++) {
+            StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+            switch (tokenizer.nextToken()) {
+                case GET: {
+                    String result = myHashMap.getKey(tokenizer.nextToken());
+                    stringBuilder.append(result == null ? "None" : result).append("\n");
+                    break;
+                }
+                case PUT: {
+                    myHashMap.putKeyValue(tokenizer.nextToken(), tokenizer.nextToken());
+                    break;
+                }
+                case DELETE: {
+                    String result = myHashMap.deleteKey(tokenizer.nextToken());
+                    stringBuilder.append(result == null ? "None" : result).append("\n");
+                    break;
                 }
             }
         }
-    }
-
-    private static ArrayList<Map<String, List<String>>> getMap(BufferedReader reader, int numberOfRepetitions) throws IOException {
-        ArrayList<Map<String, List<String>>> list = new ArrayList<Map<String, List<String>>>();
-        for (int i = 0; i < numberOfRepetitions; i++) {
-            var str = reader.readLine();
-            List<String> listNested  = new ArrayList<>();
-            if (str.contains(DELETE)) {
-                var arr = str.split(" ");
-                listNested.add(arr[1]);
-                list.add(Map.of(arr[0], listNested));
-            } else if (str.contains(GET)) {
-                var arr = str.split(" ");
-                listNested.add(arr[1]);
-                list.add(Map.of(arr[0], listNested));
-            } else if (str.contains(PUT)) {
-                var arr = str.split(" ");
-                listNested.add(arr[1]);
-                listNested.add(arr[2]);
-                list.add(Map.of(arr[0], listNested));
-            }
-        }
-        return list;
+        System.out.println(stringBuilder);
     }
 
     private static BufferedReader getReader() {
@@ -70,10 +43,13 @@ public class Two {
     }
 
     public static class MyHashMap {
-        private static final int INITIAL_SIZE = 16;
-        private static final int Q = 100;
-        private static final int R = 10;
+        private static final int INITIAL_SIZE = 100000;
+        private static final int Q = INITIAL_SIZE;
         private final List<List<Pair>> data = new ArrayList<>(INITIAL_SIZE);
+
+        public MyHashMap() {
+            updateDataArray(INITIAL_SIZE);
+        }
 
         /**
          * Получение значения по ключу.
@@ -149,7 +125,7 @@ public class Two {
          */
         public String deleteKey(String key) {
             int hash = getHash(key);
-            if(hash >= data.size() || data.isEmpty() || data.get(hash) == null || data.get(hash).isEmpty()) {
+            if (hash >= data.size() || data.isEmpty() || data.get(hash) == null || data.get(hash).isEmpty()) {
                 return null;
             } else {
                 Optional<Pair> pairs = getOptionalPair(key, hash);
@@ -167,12 +143,7 @@ public class Two {
         }
 
         private static int getHash(String string) {
-            char[] chars = string.toCharArray();
-            int hash = 0;
-            for (int aChar : chars) {
-                hash = Math.abs((hash * Q + aChar) % R);
-            }
-            return hash;
+            return Integer.parseInt(string) % Q;
         }
 
         private int indexOf(List<Pair> pairs, Pair pair) {

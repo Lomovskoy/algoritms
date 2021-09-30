@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /*
+ID 53695340
+
 -- ПРИНЦИП РАБОТЫ --
 Этот алгоритм состоит из 2х алгоритмов.
 

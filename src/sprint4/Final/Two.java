@@ -5,6 +5,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
+/*
+-- ПРИНЦИП РАБОТЫ --
+
+
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+
+
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+
+
+*/
 public class Two {
 
     private static final String DELETE = "delete";

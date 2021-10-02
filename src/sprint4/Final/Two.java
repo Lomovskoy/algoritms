@@ -15,9 +15,7 @@ MyHashMap имеет 3 метода
     В лучшем случае если не было коллизий по этому ключу, это будет за ~ O(1).
     В худшем случае если все ключи будут коллизиями, то поиск будет за O(n);
 2 putKeyValue - делает хеш из ключа. Помещает ключ и значение в пару.
-    Смотрит, сравнивает хеш и длину листа пар, если больше то наращивает лист до нужной длинны,
-    и помешает пару в конец листа, корзин.
-    Если же нет, то вытаскивает корзину с парами, и смотрит если по такому ключу нет пары,
+    Вытаскивает корзину с парами, и смотрит если по такому ключу нет пары,
     то добавляет её туда, если же есть, то заменяет значение по паре.
     В лучшем случае если не было коллизий по этому ключу, это будет за ~ O(1).
     В худшем случае если все ключи будут коллизиями, то поиск будет за O(n);
@@ -65,16 +63,16 @@ public class Two {
             StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
             switch (tokenizer.nextToken()) {
                 case GET: {
-                    String result = myHashMap.getKey(tokenizer.nextToken());
+                    Integer result = myHashMap.getKey(Integer.parseInt(tokenizer.nextToken()));
                     stringBuilder.append(result == null ? "None" : result).append("\n");
                     break;
                 }
                 case PUT: {
-                    myHashMap.putKeyValue(tokenizer.nextToken(), tokenizer.nextToken());
+                    myHashMap.putKeyValue(Integer.parseInt(tokenizer.nextToken()), Integer.parseInt(tokenizer.nextToken()));
                     break;
                 }
                 case DELETE: {
-                    String result = myHashMap.deleteKey(tokenizer.nextToken());
+                    Integer result = myHashMap.deleteKey(Integer.parseInt(tokenizer.nextToken()));
                     stringBuilder.append(result == null ? "None" : result).append("\n");
                     break;
                 }
@@ -89,11 +87,10 @@ public class Two {
 
     public static class MyHashMap {
         private static final int INITIAL_SIZE = 100000;
-        private static final int Q = INITIAL_SIZE;
         private final List<List<Pair>> data = new ArrayList<>(INITIAL_SIZE);
 
         public MyHashMap() {
-            updateDataArray(INITIAL_SIZE);
+            updateDataArray();
         }
 
         /**
@@ -104,21 +101,17 @@ public class Two {
          * @param key ключ
          * @return значение
          */
-        public String getKey(String key) {
+        public Integer getKey(Integer key) {
             int hash = getHash(key);
-            if (hash >= data.size()) {
+            List<Pair> pairs = data.get(hash);
+            if (pairs == null || pairs.isEmpty()) {
+                return null;
+            }
+            Optional<Pair> pair = getOptionalPair(key, pairs);
+            if (pair.isEmpty()) {
                 return null;
             } else {
-                List<Pair> pairs = data.get(hash);
-                if (pairs == null || pairs.isEmpty()) {
-                    return null;
-                }
-                Optional<Pair> pair = getOptionalPair(key, pairs);
-                if (pair.isEmpty()) {
-                    return null;
-                } else {
-                    return pair.get().getValue();
-                }
+                return pair.get().getValue();
             }
         }
 
@@ -130,31 +123,24 @@ public class Two {
          * @param key   ключ
          * @param value значение
          */
-        public void putKeyValue(String key, String value) {
+        public void putKeyValue(Integer key, Integer value) {
             int hash = getHash(key);
             Pair pair = new Pair(key, value);
-            if (hash >= data.size()) {
-                List<Pair> pairs = new ArrayList<>();
-                pairs.add(pair);
-                updateDataArray(hash);
-                data.add(hash, pairs);
+            List<Pair> pairs = data.get(hash);
+            if (pairs == null || pairs.isEmpty()) {
+                List<Pair> newPairs = new ArrayList<>();
+                newPairs.add(pair);
+                data.set(hash, newPairs);
             } else {
-                List<Pair> pairs = data.get(hash);
-                if (pairs == null || pairs.isEmpty()) {
-                    List<Pair> newPairs = new ArrayList<>();
-                    newPairs.add(pair);
-                    data.set(hash, newPairs);
+                List<Pair> pairsKey = getPairList(key, pairs);
+                if (pairsKey.isEmpty()) {
+                    data.get(hash).add(new Pair(key, value));
                 } else {
-                    List<Pair> pairsKey = getPairList(key, pairs);
-                    if (pairsKey.isEmpty()) {
-                        data.get(hash).add(new Pair(key, value));
+                    int index = indexOf(pairs, pair.getKey());
+                    if (index < 0) {
+                        data.get(hash).set(data.get(hash).size() - 1, pair);
                     } else {
-                        int index = indexOf(pairs, pair);
-                        if (index < 0) {
-                            data.get(hash).set(data.get(hash).size() - 1, pair);
-                        } else {
-                            data.get(hash).set(index, pair);
-                        }
+                        data.get(hash).set(index, pair);
                     }
                 }
             }
@@ -168,34 +154,30 @@ public class Two {
          * @param key ключ
          * @return значение
          */
-        public String deleteKey(String key) {
+        public Integer deleteKey(Integer key) {
             int hash = getHash(key);
-            if (hash >= data.size() || data.isEmpty() || data.get(hash) == null || data.get(hash).isEmpty()) {
+            if (data.isEmpty() || data.get(hash) == null || data.get(hash).isEmpty()) {
                 return null;
             } else {
-                Optional<Pair> pairs = getOptionalPair(key, hash);
-                if (pairs.isEmpty()) {
+                int index = indexOf(data.get(hash), key);
+                if (index < 0) {
                     return null;
-                } else {
-                    int index = indexOf(data.get(hash), pairs.get());
-                    if (index < 0) {
-                        return null;
-                    }
-                    data.get(hash).set(index, null);
-                    return pairs.get().getValue();
                 }
+                var value = data.get(hash).get(index).getValue();
+                data.get(hash).set(index, null);
+                return value;
             }
         }
 
-        private static int getHash(String string) {
-            return Integer.parseInt(string) % Q;
+        private static int getHash(Integer val) {
+            return val % INITIAL_SIZE;
         }
 
-        private int indexOf(List<Pair> pairs, Pair pair) {
+        private int indexOf(List<Pair> pairs, Integer key) {
             int index = 0;
             for (Pair val : pairs) {
-                if (val != null && val.getKey() != null && pair != null && pair.getKey() != null) {
-                    if (val.getKey().equals(pair.getKey())) {
+                if (val != null && val.getKey() != null && key != null) {
+                    if (val.getKey().equals(key)) {
                         return index;
                     }
                 }
@@ -204,13 +186,13 @@ public class Two {
             return -1;
         }
 
-        private void updateDataArray(int newSize) {
-            for (int i = data.size(); i <= newSize; i++) {
+        private void updateDataArray() {
+            for (int i = data.size(); i <= MyHashMap.INITIAL_SIZE; i++) {
                 data.add(null);
             }
         }
 
-        private Optional<Pair> getOptionalPair(String key, List<Pair> pairs) {
+        private Optional<Pair> getOptionalPair(Integer key, List<Pair> pairs) {
             for (Pair pair : pairs) {
                 if (pair != null && pair.getKey().equals(key)) {
                     return Optional.of(pair);
@@ -219,11 +201,11 @@ public class Two {
             return Optional.empty();
         }
 
-        private Optional<Pair> getOptionalPair(String key, int hash) {
+        private Optional<Pair> getOptionalPair(Integer key, int hash) {
             return getOptionalPair(key, data.get(hash));
         }
 
-        private List<Pair> getPairList(String key, List<Pair> pairs) {
+        private List<Pair> getPairList(Integer key, List<Pair> pairs) {
             List<Pair> pairList = new ArrayList<>();
             for (Pair pair : pairs) {
                 if (pair != null && pair.getKey().equals(key)) {
@@ -235,23 +217,23 @@ public class Two {
     }
 
     public static class Pair {
-        private final String key;
-        private String value;
+        private final Integer key;
+        private Integer value;
 
-        public Pair(String key, String value) {
+        public Pair(Integer key, Integer value) {
             this.key = key;
             this.value = value;
         }
 
-        public String getKey() {
+        public Integer getKey() {
             return key;
         }
 
-        public String getValue() {
+        public Integer getValue() {
             return value;
         }
 
-        public void setValue(String value) {
+        public void setValue(Integer value) {
             this.value = value;
         }
 

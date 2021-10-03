@@ -14,24 +14,28 @@ import java.util.*;
 Потом перебираются строки которые нужны для поиска соответствий.
 Каждая строка разбивается по словам, и помещается в Set, что бы избежать повторов.
 Затем для каждого элемента из Set осуществляется поиск в dataMap.
-Результаты поиска по ключу помечается в новый Map из ключа,
+Результаты поиска по ключу помечается в новый Array из ключа индекс массива,
 который является номером строки, где найдено слово, и значение, это количество вхождений.
-Потом осуществляется сортировка по количеству вхождений, и повторная сортировка по номеру строки.
+Потом извлекается 5 самых индексов по самым большим значениям,
+если значения одинаковы будут извлечены индексы по порядку, если значение не 0.
 После сортировки номера строк помещаются в поток вывода.
 
 -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
 Данный алгоритм проходит все тесты и все краевые условия.
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
-Временна сложность построение dataMap O(n^2) - если судить по количеству строк,
-но если судить по количеству слов то O(n)
-Временна сложность responsePrint O(n^3) - если судить по количеству строк,
-но если судить по количеству слов то O(n^2)
-Временна сложность print + в ней сортировки 2 шт - двойная сортировка, думаю это O(n + log(n)) * 2.
+Пускай будет n документов,
+в среднем по k слов и m запросов в среднем по j слов.
+
+Временна сложность построение dataMap если судить по количеству слов то O(k)
+Временна сложность responsePrint если судить по количеству слов то O(k) * n
+Временна сложность print это O(k) * 5.
 Печать это O(n)
-Если смотреть по количеству слов то общая сложность сортировки будет
-O(n) + O(n^2) + O(n + log(n)) * 2 + O(n) ~= O(n * 2) + O(n^2) + O(n * 2 + log(n * 2)) ~= O((n * 4 + log(n * 2))^2) ~=
-O(n * 6) - на самом деле я не знаю как правильно посчитать
+
+Если смотреть общую сложность будет:
+O(k) + O(k) * n + O(k) * 5 + O(n) =
+O(k) + O(k) * (n + 5) + O(n) =
+O(k + n) + O(k) * (n + 5)
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
 Пространственная сложность алгоритма после переработки получается не очень большой
@@ -55,76 +59,61 @@ public class One {
         Map<String, Map<Integer, Integer>> dataMap = getDataMap(storageSize, reader);
 
         int requestsCount = Integer.parseInt(reader.readLine());
-        responsePrint(requestsCount, reader, dataMap);
+        responsePrint(requestsCount, reader, dataMap, storageSize);
 
     }
 
-    private static void responsePrint(int requestsCount, BufferedReader reader, Map<String, Map<Integer, Integer>> dataMap) throws IOException {
-        List<Document> responseMap = new ArrayList<>();
+    private static void responsePrint(int requestsCount, BufferedReader reader, Map<String, Map<Integer, Integer>> dataMap, int storageSize) throws IOException {
+
         for (int i = 0; i < requestsCount; i++) {
-            for (String string : new LinkedHashSet<>(Arrays.asList(reader.readLine().split(" ")))) {
+            Set<String> stringSet = new LinkedHashSet<>(Arrays.asList(reader.readLine().split(" ")));
+            Integer[] arrayDocument = getIntegers(storageSize);
+            for (String string : stringSet) {
                 Map<Integer, Integer> subMap = dataMap.get(string);
                 if (subMap != null) {
                     for (Map.Entry<Integer, Integer> val : subMap.entrySet()) {
-                        if (responseMap.isEmpty()) {
-                            responseMap.add(new Document(val.getKey(), val.getValue()));
+                        if (arrayDocument[val.getKey()] == null) {
+                            arrayDocument[val.getKey()] = val.getValue();
                         } else {
-                            Document document = new Document(val.getKey(), val.getValue());
-                            int index = responseMap.indexOf(document);
-                            if (index < 0) {
-                                responseMap.add(document);
-                            } else {
-                                responseMap.get(index).setRelevancy(responseMap.get(index).getRelevancy() + val.getValue());
-                            }
+                            arrayDocument[val.getKey()] = arrayDocument[val.getKey()] + val.getValue();
                         }
                     }
                 }
             }
-            print(responseMap);
+            print(arrayDocument);
         }
     }
 
-    private static void print(List<Document> responseMap) {
-        responseMap.stream()
-                .sorted(Comparator.comparingInt(Document::getRelevancy).reversed()
-                        .thenComparing(Document::getDocId))
-                .limit(LIMIT)
-                .forEach(in -> System.out.print((in.getDocId() + 1) + " "));
-        responseMap.clear();
+    private static Integer[] getIntegers(int storageSize) {
+        Integer[] arrayDocument = new Integer[storageSize];
+        for (int i = 0; i < storageSize; i++) {
+            arrayDocument[i] = 0;
+        }
+        return arrayDocument;
+    }
+
+    private static void print(Integer[] arrayDocument) {
+        int maxIndex = -1;
+
+        for (int j = 0; j < LIMIT; j++) {
+            for (int i = 0; i < arrayDocument.length; i++) {
+                if (maxIndex == -1 && arrayDocument[i] > 0) {
+                    maxIndex = i;
+                } else {
+                    if (maxIndex >= 0 && arrayDocument[i] > arrayDocument[maxIndex]) {
+                        maxIndex = i;
+                    }
+                }
+            }
+            if (maxIndex >= 0) {
+                if (arrayDocument[maxIndex] > 0) {
+                    System.out.print(maxIndex + 1 + " ");
+                    arrayDocument[maxIndex] = 0;
+                }
+            }
+        }
         System.out.println();
-    }
 
-    static class Document {
-        public int docId;
-        public int relevancy;
-
-        public Document(int docId, int relevancy) {
-            this.docId = docId;
-            this.relevancy = relevancy;
-        }
-
-        public int getDocId() {
-            return docId;
-        }
-
-        public int getRelevancy() {
-            return relevancy;
-        }
-
-        public void setRelevancy(int relevancy) {
-            this.relevancy = relevancy;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            Document document = (Document) o;
-            return this.getDocId() == document.getDocId();
-        }
-
-        @Override
-        public int hashCode() {
-            return getDocId();
-        }
     }
 
     private static Map<String, Map<Integer, Integer>> getDataMap(int storageSize, BufferedReader reader) throws IOException {

@@ -3,10 +3,7 @@ package sprint4.Final;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
 -- ПРИНЦИП РАБОТЫ --
@@ -63,13 +60,23 @@ public class One {
     }
 
     private static void responsePrint(int requestsCount, BufferedReader reader, Map<String, Map<Integer, Integer>> dataMap) throws IOException {
-        Map<Integer, Integer> responseMap = new HashMap<>();
+        List<Document> responseMap = new ArrayList<>();
         for (int i = 0; i < requestsCount; i++) {
-            for (String string : new LinkedHashSet<>(List.of(reader.readLine().split(" ")))) {
-                var subMap = dataMap.get(string);
+            for (String string : new LinkedHashSet<>(Arrays.asList(reader.readLine().split(" ")))) {
+                Map<Integer, Integer> subMap = dataMap.get(string);
                 if (subMap != null) {
-                    for (var val : subMap.entrySet()) {
-                        responseMap.merge(val.getKey(), val.getValue(), Integer::sum);
+                    for (Map.Entry<Integer, Integer> val : subMap.entrySet()) {
+                        if (responseMap.isEmpty()) {
+                            responseMap.add(new Document(val.getKey(), val.getValue()));
+                        } else {
+                            Document document = new Document(val.getKey(), val.getValue());
+                            int index = responseMap.indexOf(document);
+                            if (index < 0) {
+                                responseMap.add(document);
+                            } else {
+                                responseMap.get(index).setRelevancy(responseMap.get(index).getRelevancy() + val.getValue());
+                            }
+                        }
                     }
                 }
             }
@@ -77,13 +84,47 @@ public class One {
         }
     }
 
-    private static void print(Map<Integer, Integer> responseMap) {
-        responseMap.entrySet().stream()
-                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed()
-                        .thenComparing(Map.Entry::getKey)).limit(LIMIT)
-                .forEach(in -> System.out.print((in.getKey() + 1) + " "));
+    private static void print(List<Document> responseMap) {
+        responseMap.stream()
+                .sorted(Comparator.comparingInt(Document::getRelevancy).reversed()
+                        .thenComparing(Document::getDocId))
+                .limit(LIMIT)
+                .forEach(in -> System.out.print((in.getDocId() + 1) + " "));
         responseMap.clear();
         System.out.println();
+    }
+
+    static class Document {
+        public int docId;
+        public int relevancy;
+
+        public Document(int docId, int relevancy) {
+            this.docId = docId;
+            this.relevancy = relevancy;
+        }
+
+        public int getDocId() {
+            return docId;
+        }
+
+        public int getRelevancy() {
+            return relevancy;
+        }
+
+        public void setRelevancy(int relevancy) {
+            this.relevancy = relevancy;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            Document document = (Document) o;
+            return this.getDocId() == document.getDocId();
+        }
+
+        @Override
+        public int hashCode() {
+            return getDocId();
+        }
     }
 
     private static Map<String, Map<Integer, Integer>> getDataMap(int storageSize, BufferedReader reader) throws IOException {

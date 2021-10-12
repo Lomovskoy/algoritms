@@ -1,6 +1,6 @@
 package sprint5;
 
-public class Solution {
+public class A {
 
     public static int treeSolution(Node head) {
         if (head.left == null && head.right == null) {

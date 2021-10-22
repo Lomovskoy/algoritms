@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 /*
-ID 54905798
+ID 55244332
 
 -- ПРИНЦИП РАБОТЫ --
     1. Создаём пустую бинарную кучу.
@@ -72,16 +72,17 @@ public class One {
         }
 
         private void siftUp(int idx) {
-            if (idx == 1) {
-                return;
+            while (true) {
+                if (idx == 1) return;
+
+                int parentIndex = idx / 2;
+                if (heap[parentIndex].compareTo(heap[idx])) {
+                    User swap = heap[idx];
+                    heap[idx] = heap[parentIndex];
+                    heap[parentIndex] = swap;
+                }
+                idx = parentIndex;
             }
-            int parentIndex = idx / 2;
-            if (heap[parentIndex].compareTo(heap[idx])) {
-                User swap = heap[idx];
-                heap[idx] = heap[parentIndex];
-                heap[parentIndex] = swap;
-            }
-            siftUp(parentIndex);
         }
 
         public User popMax() {
@@ -93,27 +94,31 @@ public class One {
         }
 
         public void siftDown(int idx) {
-            int left = 2 * idx;
-            int right = 2 * idx + 1;
+            while (true) {
+                int left = 2 * idx;
+                int right = 2 * idx + 1;
 
-            // нет дочерних узлов
-            if (heap.length < left || heap.length < right || idx >= size) {
+                // нет дочерних узлов
+                if (heap.length < left || heap.length < right || idx >= size) {
+                    return;
+                }
+
+                int index_largest;
+                // right <= heap.size проверяет, что есть оба дочерних узла
+                if ((right <= size) && (heap[left].compareTo(heap[right]))) {
+                    index_largest = right;
+                } else {
+                    index_largest = Math.min(left, size);
+                }
+
+                if (heap[idx].compareTo(heap[index_largest])) {
+                    User buffer = heap[idx];
+                    heap[idx] = heap[index_largest];
+                    heap[index_largest] = buffer;
+                    idx = index_largest;
+                    continue;
+                }
                 return;
-            }
-
-            int index_largest;
-            // right <= heap.size проверяет, что есть оба дочерних узла
-            if ((right <= size) && (heap[left].compareTo(heap[right]))) {
-                index_largest = right;
-            } else {
-                index_largest = Math.min(left, size);
-            }
-
-            if (heap[idx].compareTo(heap[index_largest])) {
-                User buffer = heap[idx];
-                heap[idx] = heap[index_largest];
-                heap[index_largest] = buffer;
-                siftDown(index_largest);
             }
         }
     }

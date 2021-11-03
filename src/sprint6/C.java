@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class С {
+public class C {
 
     private static final Map<Integer, List<Integer>> adjacencyUse = new HashMap<>();
     private static Color[] colors;

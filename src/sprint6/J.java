@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class D {
-
+public class J {
+    // В этом стеке будет записан порядок обхода.
+    private static final Stack<Integer> order = new Stack<Integer>();
     private static final Map<Integer, List<Integer>> adjacencyUse = new HashMap<>();
     private static Color[] colors;
-
 
     public static void main(String[] args) throws Exception {
         BufferedReader reader = getReader();
@@ -20,37 +20,40 @@ public class D {
 
         buildAdjacencyUse(reader, numberRibs);
         colors = new Color[numberVertices + 1];
+
         Arrays.fill(colors, Color.WHITE);
-        int start = Integer.parseInt(reader.readLine());
-        if (numberVertices == 1) {
-            System.out.println(start);
-        } else {
-            dfs(start);
+
+        for (int i = 1; i < colors.length; i++) {
+            dfs(i);
         }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 1; i <= numberVertices; i++) {
+            stringBuilder.append(order.pop()).append(" ");
+        }
+        System.out.println(stringBuilder);
     }
 
     private static void dfs(int startVertex) {
-        ArrayDeque<Integer> deque = new ArrayDeque<Integer>();
-        deque.push(startVertex);
+        Stack<Integer> stack = new Stack<Integer>();
+        stack.push(startVertex);
 
-        while (!deque.isEmpty()) {
+        while (!stack.empty()) {
             // Получаем из стека очередную вершину.
             // Это может быть как новая вершина, так и уже посещённая однажды.
-            int vertex = deque.pop();
+            int vertex = stack.pop();
             if (colors[vertex].equals(Color.WHITE)) {
-                System.out.print(vertex + " ");
                 // Красим вершину в серый. И сразу кладём её обратно в стек:
                 // это позволит алгоритму позднее вспомнить обратный путь по графу.
                 colors[vertex] = Color.GRAY;
-                deque.push(vertex);
+                stack.push(vertex);
                 // Теперь добавляем в стек все не посещённые соседние вершины,
                 // вместо вызова рекурсии
                 if (adjacencyUse.get(vertex) != null) {
                     List<Integer> connectedVertices = adjacencyUse.get(vertex);
-                    Collections.sort(connectedVertices);
                     for (int currentVertex : connectedVertices) {
                         if (colors[currentVertex].equals(Color.WHITE)) {
-                            deque.addLast(currentVertex);
+                            stack.push(currentVertex);
                         }
                     }
                 }
@@ -58,6 +61,7 @@ public class D {
                 // Серую вершину мы могли получить из стека только на обратном пути.
                 // Следовательно, её следует перекрасить в чёрный.
                 colors[vertex] = Color.BLACK;
+                order.push(vertex);
             }
         }
     }
@@ -75,13 +79,6 @@ public class D {
             } else {
                 adjacencyUse.get(start).add(end);
             }
-            if (adjacencyUse.get(end) == null) {
-                ArrayList<Integer> set = new ArrayList<Integer>();
-                set.add(start);
-                adjacencyUse.put(end, set);
-            } else {
-                adjacencyUse.get(end).add(start);
-            }
         }
     }
 
@@ -94,6 +91,8 @@ public class D {
         return new int[]{Integer.parseInt(tokenizer.nextToken()), Integer.parseInt(tokenizer.nextToken())};
     }
 
-    enum Color {WHITE, GRAY, BLACK}
+    enum Color {
+        WHITE, GRAY, BLACK
+    }
 
 }

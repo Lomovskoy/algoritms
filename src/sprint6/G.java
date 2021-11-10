@@ -73,21 +73,6 @@ public class G {
         }
     }
 
-//    // Кратчайший путь от s до v.
-//    private static Stack<Integer> shortestPath(int v) {
-//        // Класть вершины будем в стек, тогда
-//        // стартовая вершина окажется наверху стека
-//        // и порядок следования от s до v будет соответствовать
-//        // порядку извлечения вершин из стека.
-//        Stack<Integer> path = new Stack<Integer>();
-//        int currentVertex = v;
-//        while (true) {
-//            path.push(currentVertex);
-//            currentVertex = previous[currentVertex];
-//        }
-//        return path;
-//    }
-
     private static void buildAdjacencyUse(BufferedReader reader, int size) throws IOException {
         for (int i = 0; i < size; i++) {
             StringTokenizer tokenizer = new StringTokenizer(reader.readLine());

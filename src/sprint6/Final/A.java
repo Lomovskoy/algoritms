@@ -7,7 +7,7 @@ import java.util.*;
 
 public class A {
     private static final String MESSAGE = "Oops! I did it again";
-    private static final Map<Integer, List<Pair>> graph = new HashMap<>();
+    private static final Map<Integer, Set<Pair>> graph = new HashMap<>();
     // Рёбра, составляющие MST.
     private static int maximumSpanningTree = 0;
     // Множество вершины, ещё не добавленных в остов.
@@ -21,7 +21,6 @@ public class A {
 
         int numberVertices = pair[0];   // количество вершин
         int numberRibs = pair[1];       // количество рёбер
-
 
         buildAdjacencyUse(reader, numberRibs);
         Integer sum = findMST();
@@ -85,7 +84,7 @@ public class A {
 
     public static class Pair {
         private final int end;
-        private int edge;
+        private final int edge;
 
         public Pair(int end, int edge) {
             this.end = end;
@@ -100,8 +99,22 @@ public class A {
             return edge;
         }
 
-        public void setEdge(int edge) {
-            this.edge = edge;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Pair)) return false;
+
+            Pair pair = (Pair) o;
+
+            if (getEnd() != pair.getEnd()) return false;
+            return getEdge() == pair.getEdge();
+        }
+
+        @Override
+        public int hashCode() {
+            int result = getEnd();
+            result = 31 * result + getEdge();
+            return result;
         }
     }
 
@@ -123,34 +136,14 @@ public class A {
 
             if (start != end) {
                 if (graph.get(start) == null) {
-                    ArrayList<Pair> list = new ArrayList<Pair>();
-                    list.add(new Pair(end, distance));
-                    graph.put(start, list);
+                    graph.put(start, new HashSet<>() {{ add(new Pair(end, distance)); }});
                 } else {
-                    Optional<Pair> pairOpt = graph.get(start).stream().filter(p -> p.getEnd() == end).findFirst();
-                    if (pairOpt.isEmpty()) {
-                        graph.get(start).add(new Pair(end, distance));
-                    } else {
-                        Pair pair = pairOpt.get();
-                        if (pair.getEdge() < distance) {
-                            pair.setEdge(distance);
-                        }
-                    }
+                    graph.get(start).add(new Pair(end, distance));
                 }
                 if (graph.get(end) == null) {
-                    ArrayList<Pair> list = new ArrayList<Pair>();
-                    list.add(new Pair(start, distance));
-                    graph.put(end, list);
+                    graph.put(end, new HashSet<>() {{ add(new Pair(start, distance)); }});
                 } else {
-                    Optional<Pair> pairOpt = graph.get(end).stream().filter(p -> p.getEnd() == start).findFirst();
-                    if (pairOpt.isEmpty()) {
-                        graph.get(end).add(new Pair(start, distance));
-                    } else {
-                        Pair pair = pairOpt.get();
-                        if (pair.getEdge() < distance) {
-                            pair.setEdge(distance);
-                        }
-                    }
+                    graph.get(end).add(new Pair(start, distance));
                 }
             }
         }

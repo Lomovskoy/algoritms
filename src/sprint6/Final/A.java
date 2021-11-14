@@ -84,7 +84,7 @@ public class A {
 
     public static class Pair {
         private final int end;
-        private final int edge;
+        private int edge;
 
         public Pair(int end, int edge) {
             this.end = end;
@@ -97,6 +97,10 @@ public class A {
 
         public int getEdge() {
             return edge;
+        }
+
+        public void setEdge(int edge) {
+            this.edge = edge;
         }
 
         @Override
@@ -138,13 +142,25 @@ public class A {
                 if (graph.get(start) == null) {
                     graph.put(start, new HashSet<>() {{ add(new Pair(end, distance)); }});
                 } else {
-                    graph.get(start).add(new Pair(end, distance));
+                    addVertex(start, end, distance);
                 }
                 if (graph.get(end) == null) {
                     graph.put(end, new HashSet<>() {{ add(new Pair(start, distance)); }});
                 } else {
-                    graph.get(end).add(new Pair(start, distance));
+                    addVertex(end, start, distance);
                 }
+            }
+        }
+    }
+
+    private static void addVertex(int start, int end, int distance) {
+        Optional<Pair> pairOpt = graph.get(start).stream().filter(p -> p.getEnd() == end).findFirst();
+        if (pairOpt.isEmpty()) {
+            graph.get(start).add(new Pair(end, distance));
+        } else {
+            Pair pair = pairOpt.get();
+            if (pair.getEdge() < distance) {
+                pair.setEdge(distance);
             }
         }
     }

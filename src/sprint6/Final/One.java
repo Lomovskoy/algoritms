@@ -1,19 +1,19 @@
 package sprint6.Final;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class A {
+public class One {
     private static final String MESSAGE = "Oops! I did it again";
-    private static final Map<Integer, Set<Pair>> graph = new HashMap<>();
+    private static final Map<Integer, PriorityQueue<Pair>> graph = new HashMap<>();
     // Рёбра, составляющие MST.
     private static int maximumSpanningTree = 0;
     // Множество вершины, ещё не добавленных в остов.
-    private static final Set<Integer> notAdded = new HashSet<>();
+    private static boolean[] notAdded;
     // Массив рёбер, исходящих из остовного дерева.
-    private static final Set<Pair> edges = new HashSet<>();
+    private static final PriorityQueue<Pair> edges = new PriorityQueue<>();
+    private static int notAddedSize;
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = getReader();
@@ -21,6 +21,8 @@ public class A {
 
         int numberVertices = pair[0];   // количество вершин
         int numberRibs = pair[1];       // количество рёбер
+        notAddedSize = numberVertices;
+        notAdded = new boolean[numberVertices + 1];
 
         buildAdjacencyUse(reader, numberRibs);
         Integer sum = findMST();
@@ -37,28 +39,25 @@ public class A {
     }
 
     private static Integer findMST() {
-        // Добавляем все вершины которые есть, пока они все не посещены
-        notAdded.addAll(graph.keySet());
 
         if (graph.isEmpty()) {
             return null;
         }
         // Берём первую попавшуюся вершину.
-        int v = new ArrayList<>(notAdded).get(0);
-        addVertex(v);
+        addVertex(1);
 
         // пока notAdded не пуст и edges не пуст:
-        while (!notAdded.isEmpty() && !edges.isEmpty()) {
+        while (notAddedSize > 0 && !edges.isEmpty()) {
             // Подразумеваем, что extractMaximum извлекает минимальное ребро
             // из массива рёбер и больше данного ребра в массива не будет.
             Pair element = extractMaximum();
-            if (notAdded.contains(element.getEnd())) {
+            if (!notAdded[element.getEnd()]) {
                 maximumSpanningTree += element.getEdge();
                 addVertex(element.getEnd());
             }
         }
 
-        if (!notAdded.isEmpty()) {
+        if (notAddedSize > 0) {
             return null;
         } else {
             return maximumSpanningTree;
@@ -66,25 +65,24 @@ public class A {
     }
 
     private static Pair extractMaximum() {
-        Pair pair = Collections.max(edges, Comparator.comparing(Pair::getEdge));
-        edges.remove(pair);
-        return pair;
+        return edges.poll();
     }
 
     private static void addVertex(int vertex) {
-        notAdded.remove(vertex);
+        notAdded[vertex] = true;
+        notAddedSize--;
 
         // Добавляем все рёбра, которые инцидентны v, но их конец ещё не в остове.
         for (Pair val : graph.get(vertex)) {
-            if (notAdded.contains(val.getEnd())) {
+            if (!notAdded[val.getEnd()]) {
                 edges.add(val);
             }
         }
     }
 
-    public static class Pair {
+    public static class Pair implements Comparable<Pair> {
         private final int end;
-        private int edge;
+        private final int edge;
 
         public Pair(int end, int edge) {
             this.end = end;
@@ -97,10 +95,6 @@ public class A {
 
         public int getEdge() {
             return edge;
-        }
-
-        public void setEdge(int edge) {
-            this.edge = edge;
         }
 
         @Override
@@ -119,6 +113,11 @@ public class A {
             int result = getEnd();
             result = 31 * result + getEdge();
             return result;
+        }
+
+        @Override
+        public int compareTo(Pair o) {
+            return Integer.compare(o.getEdge(), this.edge);
         }
     }
 
@@ -140,12 +139,12 @@ public class A {
 
             if (start != end) {
                 if (graph.get(start) == null) {
-                    graph.put(start, new HashSet<>() {{ add(new Pair(end, distance)); }});
+                    graph.put(start, new PriorityQueue<>() {{ add(new Pair(end, distance)); }});
                 } else {
                     addVertex(start, end, distance);
                 }
                 if (graph.get(end) == null) {
-                    graph.put(end, new HashSet<>() {{ add(new Pair(start, distance)); }});
+                    graph.put(end, new PriorityQueue<>() {{ add(new Pair(start, distance)); }});
                 } else {
                     addVertex(end, start, distance);
                 }
@@ -154,14 +153,6 @@ public class A {
     }
 
     private static void addVertex(int start, int end, int distance) {
-        Optional<Pair> pairOpt = graph.get(start).stream().filter(p -> p.getEnd() == end).findFirst();
-        if (pairOpt.isEmpty()) {
-            graph.get(start).add(new Pair(end, distance));
-        } else {
-            Pair pair = pairOpt.get();
-            if (pair.getEdge() < distance) {
-                pair.setEdge(distance);
-            }
-        }
+        graph.get(start).add(new Pair(end, distance));
     }
 }

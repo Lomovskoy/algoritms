@@ -22,6 +22,12 @@ public class L {
         int[][] count = new int[numberIngots][maxCapacity + 1];
         buildDp(reader, numberIngots);
 
+        buildDP(numberIngots, maxCapacity, count);
+        System.out.println(count[numberIngots - 1][maxCapacity]);
+
+    }
+
+    private static void buildDP(int numberIngots, int maxCapacity, int[][] count) {
         for (int i = 0; i < numberIngots; i++) {
             for (int j = 0; j <= maxCapacity; j++) {
                 if (i == 0) {
@@ -41,8 +47,6 @@ public class L {
                 }
             }
         }
-        System.out.println(count[numberIngots - 1][maxCapacity]);
-
     }
 
     private static void buildDp(BufferedReader reader, int size) throws IOException {

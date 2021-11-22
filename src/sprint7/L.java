@@ -61,20 +61,3 @@ public class L {
         return new int[]{Integer.parseInt(tokenizer.nextToken()), Integer.parseInt(tokenizer.nextToken())};
     }
 }
-//        for (int i = 0; i < numberIngots; i++) {
-//            for (int j = 0; j <= maxCapacity; j++) {
-//                if (i == 0) {
-//                    if(dp[i] <= j) {
-//                        count[i][j] = dp[i];
-//                    }
-//                } else {
-//                    if(dp[i] <= j) {
-//                        if (dp[i] > count[i - 1][j]) {
-//                            count[i][j] = Math.max(dp[i] + count[i - 1][j - dp[i]], dp[i]);
-//                        } else {
-//                            count[i][j] = Math.max(dp[i] + count[i - 1][j - dp[i]], count[i - 1][j]);
-//                        }
-//                    }
-//                }
-//            }
-//        }

@@ -49,7 +49,7 @@ ID 59024567
     O(factorial(n) / 2) ^ 2
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
-    O(factorial(n) / 2)
+    O(sum(1..n) / 2)
 
  */
 public class Two {

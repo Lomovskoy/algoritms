@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /*
-ID 59020813
+ID 59103223
 
 -- ПРИНЦИП РАБОТЫ --
     Проведём мысленный эксперимент.
@@ -25,10 +25,10 @@ ID 59020813
     получен из префикcа A = A[:i] при помощи разрешенных операций редактирования.
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
-    O(N * M)
+    O(N * (M * 2))
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
-    O(N ^ 2)
+    O(N * 2)
 
  */
 public class One {
@@ -44,24 +44,31 @@ public class One {
     }
 
     static int calculateDistance(String stringOne, String stringTwo) {
-        int[][] dp = new int[stringOne.length() + 1][stringTwo.length() + 1];
+        int[][] dp = new int[2][stringTwo.length() + 1];
 
-        for (int i = 0; i <= stringOne.length(); i++) {
+        int index = 1;
+
+        for (int i = 0; i <= stringTwo.length(); i++) {
+            dp[0][i] = i;
+        }
+
+        int i = 1;
+        while (index <= stringOne.length()) {
             for (int j = 0; j <= stringTwo.length(); j++) {
-                if (i == 0) {
-                    dp[i][j] = j;
-                } else if (j == 0) {
-                    dp[i][j] = i;
+                if (j == 0) {
+                    dp[i][j] = index;
                 } else {
                     dp[i][j] = min(
-                            dp[i - 1][j - 1] + costOfSubstitution(stringOne.charAt(i - 1), stringTwo.charAt(j - 1)),
+                            dp[i - 1][j - 1] + costOfSubstitution(stringOne.charAt(index - 1), stringTwo.charAt(j - 1)),
                             dp[i - 1][j] + 1,
                             dp[i][j - 1] + 1);
                 }
             }
+            System.arraycopy(dp[i], 0, dp[i - 1], 0, dp[i - 1].length);
+            index++;
         }
 
-        return dp[stringOne.length()][stringTwo.length()];
+        return dp[0][stringTwo.length()];
     }
 
     public static int costOfSubstitution(char a, char b) {

@@ -46,10 +46,10 @@ ID 59024567
       2. DP(mask, i) = DP(mask, i-1) U DP(mask2i, i-1).
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
-    O(2 ^ n)
+    O(factorial(n) / 2) ^ 2
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
-    O(N ^ 2)
+    O(factorial(n) / 2)
 
  */
 public class Two {

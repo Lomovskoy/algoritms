@@ -38,17 +38,6 @@ public class L {
         return n;
     }
 
-    //функция prefix_function(s):
-    //    # Функция возвращает массив длины |s|
-    //    π = [0, None, None, ...]
-    //    для i из [1 .. |s|):
-    //        k = π[i - 1]
-    //        пока (k > 0) и (s[k] ≠ s[i]):
-    //            k = π[k - 1]
-    //        если s[k] == s[i], то:
-    //            k += 1
-    //        π[i] = k
-    //    вернуть π
     private static BufferedReader getReader() {
         return new BufferedReader(new InputStreamReader(System.in));
     }

@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /*
-ID 60624651
+ID 60938889
 
 -- ПРИНЦИП РАБОТЫ --
-    Сначала мы распаковываем данные строку с помощью рекурсии.
+    Сначала мы распаковываем текущую строку с помощью рекурсии.
     Затем ищем наибольший общий префикс в этих строках,
-    алгоритмом схожим с алгоритмом Кнута — Морриса — Пратта.
+    алгоритмом посимвольного сравнения строк.
 
 -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
     Рассмотрим сравнение строк на позиции i, где образец S[O, m − 1] сопоставляется с частью текста T[i, i + m − 1].
@@ -43,38 +43,33 @@ public class One {
         BufferedReader reader = getReader();
 
         int size = Integer.parseInt(reader.readLine());
-        String[] unpackStrings = getArray(reader, size);
+        String[] strings = getArray(reader, size);
 
-        System.out.println(longCommonPrefix(unpackStrings));
-    }
+        String answer = "";
 
-    public static StringBuilder longCommonPrefix(String[] strings) {
-        StringBuilder commonPrefix = new StringBuilder();
-        int count = 0, k = 0;
-
-        if (strings.length > 0) {
-            for (int i = 0; i < strings[0].length(); i++) {
-                int j = 1;
-                while (j < strings.length) {
-                    if (strings[0].charAt(k) == strings[j].charAt(k)) {
-                        count++;
-                        j++;
-                    } else {
-                        break;
-                    }
-                }
-                if (count == strings.length - 1) {
-                    commonPrefix.append(strings[0].charAt(k));
-                    count = 0;
-                    k++;
+        if (strings.length > 1) {
+            for (int i = 1; i < strings.length; i++) {
+                if (i == 1) {
+                    answer = longCommonPrefix(unpack(strings[i - 1]), unpack(strings[i]));
                 } else {
-                    return commonPrefix;
+                    answer = longCommonPrefix(answer, unpack(strings[i]));
                 }
-
             }
+        } else {
+            answer = unpack(strings[0]);
         }
 
-        return commonPrefix;
+        System.out.println(answer);
+    }
+
+    public static String longCommonPrefix(String firstStr, String secondStr) {
+        int minLength = Math.min(firstStr.length(), secondStr.length());
+        for (int i = 0; i < minLength; i++) {
+            if (firstStr.charAt(i) != secondStr.charAt(i)) {
+                return firstStr.substring(0, i);
+            }
+        }
+        return firstStr.substring(0, minLength);
     }
 
     private static String unpack(String string) {
@@ -113,7 +108,7 @@ public class One {
     private static String[] getArray(BufferedReader reader, int size) throws IOException {
         String[] strings = new String[size];
         for (int i = 0; i < size; i++) {
-            strings[i] = unpack(reader.readLine());
+            strings[i] = reader.readLine();
         }
         return strings;
     }
